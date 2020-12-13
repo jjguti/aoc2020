@@ -6,7 +6,7 @@ def is_correct_timestamp(buses, timestamp):
 
 # t -> initial timestamp
 # dx -> dx
-def doa2(buses, t, dx):
+def get_next_timestamp(buses, t, dx):
     timestamp = t
     while True:
         if is_correct_timestamp(buses, timestamp):
@@ -25,7 +25,7 @@ buses = list(filter(lambda x: x[1] != None, tbuses))
 dx = buses[0][1]
 t = buses[0][0]
 for i in range(1, len(buses)):
-    t = doa2(buses[i:i+2], t, dx)
+    t = get_next_timestamp(buses[i:i+2], t, dx)
     dx *= buses[i][1]
 
 print(t)
