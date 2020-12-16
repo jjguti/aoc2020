@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 with open("input") as f:
     content = [x.strip() for x in f]
 
@@ -21,7 +19,6 @@ def validate_rule(rule, value):
             validates = True
     return validates
 
-
 def validate_ticket(rules, ticket):
     for value in ticket:
         validates = False
@@ -35,7 +32,7 @@ def validate_ticket(rules, ticket):
     return True
 
 part = 0
-rules = OrderedDict()
+rules = {}
 othertickets = []
 myticket = []
 for c in content:
@@ -60,31 +57,21 @@ for ticket in othertickets:
     if validate_ticket(rules, ticket):
         newtickets.append(ticket)
 
-possible_mappings = OrderedDict()
-for field in range(0, len(myticket)):
-    for rulename, rule in rules.items():
-        validates = True
-        for ticket in newtickets:
-            if not validate_rule(rule, ticket[field]):
-                validates = False
-        if validates:
-            if rulename not in possible_mappings:
-                possible_mappings[rulename] = []
-            possible_mappings[rulename].append(field)
+def validate_row(rule, row):
+    return all(map(lambda x: validate_rule(rule,x), row))
 
-mappings_lengths = [len(x) for __, x in possible_mappings.items()]
-mappings_names = list(possible_mappings.keys())
+final_mapping = {}
+new_remaining_rules = rules.copy()
+while len(final_mapping) < len(myticket):
+    remaining_fields = set(range(0, len(myticket))) - set(final_mapping.values())
+    remaining_rules = new_remaining_rules.copy()
+    for rulename, rule in remaining_rules.items():
+        rows = [(field, [x[field] for x in newtickets]) for field in remaining_fields]
+        matching_fields = [fieldno for fieldno, row in rows if validate_row(rule, row)]
+        if len(matching_fields) == 1:
+            final_mapping[rulename] = matching_fields[0]
+            del(new_remaining_rules[rulename])
 
-final_mapping = OrderedDict()
-already_assigned = []
-for length in sorted(mappings_lengths):
-    mapping_index = mappings_lengths.index(length)
-    rule_name = mappings_names[mapping_index]
-    pos_maps = possible_mappings[rule_name]
-    definitive_maps = list(filter(lambda x: x not in already_assigned, pos_maps))
-    already_assigned.extend(definitive_maps)
-    final_mapping[rule_name] = definitive_maps[0]
-    
 total = 1
 for rulename, fieldno in final_mapping.items():
     if rulename.startswith("departure"):
