@@ -2,11 +2,11 @@ with open("input") as f:
     content = [x.strip().replace(")", " )").replace("(", "( ").split(" ") for x in f]
 
 def evaluate(expression, startpos):
-    result = 0
+    sumresult = 0
     number = 0
     i = startpos
-    expression2 = []
-    endpos = startpos
+    endpos = None
+    mulresult = 1
     while i < len(expression):
         number = None
         if expression[i] == "(":
@@ -15,20 +15,17 @@ def evaluate(expression, startpos):
             endpos = i
             break
         elif expression[i] == "*":
-            expression2.append(result)
-            result = 0
+            mulresult *= sumresult
+            sumresult = 0
         elif expression[i] != "+":
             number = int(expression[i])
 
         if number is not None:
-            result += number
+            sumresult += number
         i += 1
 
-    expression2.append(result)
-    result = 1
-    for e in expression2:
-        result *= e
+    mulresult *= sumresult
 
-    return result, endpos
+    return mulresult, endpos
 
 print(sum(map(lambda x: evaluate(x, 0)[0], content)))
