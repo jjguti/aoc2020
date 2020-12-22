@@ -8,11 +8,11 @@ for c in content:
     if not c:
         part += 1
         continue
-    if part == 0: # reading player 2 stack
+    if part == 0: # reading player 1 stack
         if c.startswith("Player"):
             continue
         player1.append(int(c))
-    if part == 1: # reading player 1 stack
+    if part == 1: # reading player 2 stack
         if c.startswith("Player"):
             continue
         player2.append(int(c))
